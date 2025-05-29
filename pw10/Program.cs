@@ -123,13 +123,13 @@ namespace FastaAnalyzerWinForms
                     lines.AddRange(sequences.Select(s =>
                         string.Join(",",
                             CsvEscape(s.Name),
-                            s.Length.ToString(),
-                            s.CGContent.ToString("F2"),
-                            s.Codons.ToString(),
-                            s.CountA.ToString(),
-                            s.CountC.ToString(),
-                            s.CountG.ToString(),
-                            s.CountT.ToString()
+                            CsvEscape(s.Length.ToString()),
+                            CsvEscape(s.CGContent.ToString("F2")),
+                            CsvEscape(s.Codons.ToString()),
+                            CsvEscape(s.CountA.ToString()),
+                            CsvEscape(s.CountC.ToString()),
+                            CsvEscape(s.CountG.ToString()),
+                            CsvEscape(s.CountT.ToString())
                         )
                     ));
                     File.WriteAllLines(saveFileDialog.FileName, lines);
