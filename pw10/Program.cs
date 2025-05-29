@@ -119,7 +119,7 @@ namespace FastaAnalyzerWinForms
                 {
                     string CsvEscape(string value) => $"\"{value.Replace("\"", "\"\"")}\"";
 
-                    var lines = new List<string> { "Name,Length,CG%,Codons,A,C,G,T" };
+                    var lines = new List<string> { "Name,Length,CG%,Codons,A,C,G,T,N" };
                     lines.AddRange(sequences.Select(s =>
                         string.Join(",",
                             CsvEscape(s.Name),
@@ -129,7 +129,8 @@ namespace FastaAnalyzerWinForms
                             CsvEscape(s.CountA.ToString()),
                             CsvEscape(s.CountC.ToString()),
                             CsvEscape(s.CountG.ToString()),
-                            CsvEscape(s.CountT.ToString())
+                            CsvEscape(s.CountT.ToString()),
+                            CsvEscape(s.CountN.ToString())
                         )
                     ));
                     File.WriteAllLines(saveFileDialog.FileName, lines);
@@ -159,7 +160,7 @@ namespace FastaAnalyzerWinForms
                 }
                 else
                 {
-                    seq += trimmed.ToUpper();
+                    seq += trimmed.ToUpperInvariant();
                 }
             }
 
@@ -181,6 +182,7 @@ namespace FastaAnalyzerWinForms
         public int CountT => Sequence.Count(c => c == 'T');
         public int CountG => Sequence.Count(c => c == 'G');
         public int CountC => Sequence.Count(c => c == 'C');
+        public int CountN => Sequence.Count(c => c != 'A' && c != 'T' && c != 'G' && c != 'C');
 
         public SequenceData(string name, string sequence)
         {
