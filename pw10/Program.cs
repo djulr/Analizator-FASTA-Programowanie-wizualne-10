@@ -31,14 +31,14 @@ namespace FastaAnalyzerWinForms
 
         public MainForm()
         {
-            Text = "Analizator FASTA";
+            Text = "FASTA Analyzer";
             Width = 1000;
             Height = 700;
 
-            loadButton = new Button { Text = "Za³aduj FASTA", Left = 10, Top = 10, Width = 100 };
+            loadButton = new Button { Text = "Load FASTA", Left = 10, Top = 10, Width = 100 };
             loadButton.Click += LoadButton_Click;
 
-            exportButton = new Button { Text = "Eksportuj", Left = 120, Top = 10, Width = 100 };
+            exportButton = new Button { Text = "Export", Left = 120, Top = 10, Width = 100 };
             exportButton.Click += ExportButton_Click;
 
             sequenceListView = new ListView
@@ -117,8 +117,21 @@ namespace FastaAnalyzerWinForms
                 }
                 else if (saveFileDialog.FileName.EndsWith(".csv"))
                 {
+                    string CsvEscape(string value) => $"\"{value.Replace("\"", "\"\"")}\"";
+
                     var lines = new List<string> { "Name,Length,CG%,Codons,A,C,G,T" };
-                    lines.AddRange(sequences.Select(s => $"{s.Name},{s.Length},{s.CGContent:F2},{s.Codons},{s.CountA},{s.CountC},{s.CountG},{s.CountT}"));
+                    lines.AddRange(sequences.Select(s =>
+                        string.Join(",",
+                            CsvEscape(s.Name),
+                            s.Length.ToString(),
+                            s.CGContent.ToString("F2"),
+                            s.Codons.ToString(),
+                            s.CountA.ToString(),
+                            s.CountC.ToString(),
+                            s.CountG.ToString(),
+                            s.CountT.ToString()
+                        )
+                    ));
                     File.WriteAllLines(saveFileDialog.FileName, lines);
                 }
             }
@@ -163,11 +176,11 @@ namespace FastaAnalyzerWinForms
         public string Sequence { get; set; }
         public int Length => Sequence.Length;
         public double CGContent => Length == 0 ? 0 : ((double)(CountC + CountG) / Length) * 100;
-        public int Codons => Length / 3;
+        public int Codons => Math.Max(0, Length - 2);
         public int CountA => Sequence.Count(c => c == 'A');
-        public int CountC => Sequence.Count(c => c == 'C');
-        public int CountG => Sequence.Count(c => c == 'G');
         public int CountT => Sequence.Count(c => c == 'T');
+        public int CountG => Sequence.Count(c => c == 'G');
+        public int CountC => Sequence.Count(c => c == 'C');
 
         public SequenceData(string name, string sequence)
         {
